@@ -1,7 +1,11 @@
 package com.amritesh.travelblog;
 
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -20,10 +24,19 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout textPasswordInput;
     private ProgressBar progressBar;
     private Button loginButton;
+    private BlogPreferences preferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        preferences = new BlogPreferences(this);
+        if(preferences.isLoggedIn()) {
+            startMainActivity();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
         textUsernameLayout = findViewById(R.id.textUsernameLayout);
@@ -31,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(v -> LoginActivity.this.onLoginClicked());
+
 
         textUsernameLayout
                 .getEditText()
@@ -56,10 +70,22 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void performLogin() {
+        preferences.setLoggedIn(true);
         textUsernameLayout.setEnabled(false);
         textPasswordInput.setEnabled(false);
         loginButton.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
+
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            startMainActivity();
+            finish();
+
+        }, 2000);
+    }
+    private void startMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     private void showErrorDialog() {
