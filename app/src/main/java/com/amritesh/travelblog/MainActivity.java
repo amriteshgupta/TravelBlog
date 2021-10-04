@@ -1,12 +1,9 @@
 package com.amritesh.travelblog;
 
+import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.amritesh.travelblog.databinding.ActivityMainBinding;
 
@@ -20,5 +17,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
+
+        startActivity(new Intent(this, BlogDetailsActivity.class));
     }
 }
