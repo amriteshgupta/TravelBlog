@@ -1,6 +1,9 @@
 package com.amritesh.travelblog;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,9 +22,12 @@ import com.amritesh.travelblog.http.BlogArticlesCallback;
 import com.amritesh.travelblog.http.BlogHttpClient;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class BlogDetailsActivity extends AppCompatActivity {
+
+    private static final String EXTRAS_BLOG = "EXTRAS_BLOG";
 
     private TextView textTitle;
     private TextView textDate;
@@ -54,34 +60,7 @@ public class BlogDetailsActivity extends AppCompatActivity {
         ratingBar = findViewById(R.id.ratingBar);
         progressBar = findViewById(R.id.progressBar);
 
-        loadData();
-    }
-
-    private void loadData() {
-        BlogHttpClient.INSTANCE.loadBlogArticles(new BlogArticlesCallback() {
-            @Override
-            public void onSuccess(List<Blog> blogList) {
-                runOnUiThread(() -> showData(blogList.get(0)));
-            }
-
-            @Override
-            public void onError() {
-                // handle error
-                runOnUiThread(() -> showErrorSnackbar());
-            }
-        });
-    }
-
-    private void showErrorSnackbar() {
-        View rootView = findViewById(android.R.id.content);
-        Snackbar snackbar = Snackbar.make(rootView,
-                "Error during loading blog articles", Snackbar.LENGTH_INDEFINITE);
-        snackbar.setActionTextColor(getResources().getColor(R.color.orange500));
-        snackbar.setAction("Retry", v -> {
-            loadData();
-            snackbar.dismiss();
-        });
-        snackbar.show();
+        showData(getIntent().getExtras().getParcelable(EXTRAS_BLOG));
     }
 
     private void showData(Blog blog) {
@@ -96,15 +75,21 @@ public class BlogDetailsActivity extends AppCompatActivity {
         ratingBar.setVisibility(View.VISIBLE);
 
         Glide.with(this)
-                .load(blog.getImage())
+                .load(blog.getImageURL())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(imageMain);
 
         Glide.with(this)
-                .load(blog.getAuthor().getAvatar())
+                .load(blog.getAuthor().getAvatarURL())
                 .transform(new CircleCrop())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(imageAvatar);
+    }
+
+    public static void startBlogDetailsActivity(Activity activity, Blog blog) {
+        Intent intent = new Intent(activity, BlogDetailsActivity.class);
+        intent.putExtra(EXTRAS_BLOG, blog);
+        activity.startActivity(intent);
     }
 
 }
