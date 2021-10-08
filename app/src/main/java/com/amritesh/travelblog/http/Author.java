@@ -1,9 +1,6 @@
 package com.amritesh.travelblog.http;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import androidx.annotation.NonNull;
+import android.os.*;
 
 import java.util.*;
 
@@ -12,9 +9,25 @@ public class Author implements Parcelable {
     private String name;
     private String avatar;
 
+    public Author(String name, String avatar) {
+        this.name = name;
+        this.avatar = avatar;
+    }
+
     protected Author(Parcel in) {
         name = in.readString();
         avatar = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(avatar);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Author> CREATOR = new Creator<Author>() {
@@ -53,16 +66,5 @@ public class Author implements Parcelable {
     @Override
     public int hashCode() {
         return Objects.hash(name, avatar);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(avatar);
     }
 }
